@@ -1,4 +1,4 @@
-namespace UrlShortner.Shared
+namespace UrlShortner.Common
 {
     public class WeatherForecast
     {
