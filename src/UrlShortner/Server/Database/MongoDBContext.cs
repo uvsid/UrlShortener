@@ -3,10 +3,11 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using UrlShortner.Common;
 using UrlShortner.Models;
+using UrlShortner.Service.Database;
 
 namespace UrlShortner.Service
 {
-    public class MongoDBContext
+    public class MongoDBContext:IContextTest
     {
 
         private readonly IMongoCollection<ShortenedUrl> _collection;
@@ -18,7 +19,7 @@ namespace UrlShortner.Service
             _collection = database.GetCollection<ShortenedUrl>("WowThisIsATrulyMagnificentCollection");
         }
  
-       public async Task CreateAsync (ShortenedUrl uriModel)
+       public async Task InsertAsync (ShortenedUrl uriModel)
         {
             await _collection.InsertOneAsync(uriModel);
         }

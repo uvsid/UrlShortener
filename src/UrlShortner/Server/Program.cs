@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using UrlShortner.Common;
 using UrlShortner.Service;
+using UrlShortner.Service.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddRazorPages();
 
 
 var connectionString = builder.Configuration.GetConnectionString("MongoDB");
-builder.Services.AddSingleton<UrlShortner.Service.MongoDBContext>((s)=> new MongoDBContext(connectionString)); ;
+builder.Services.AddTransient<IContextTest>((s)=> new MongoDBContext(connectionString)); ;
 
 var app = builder.Build();
 
