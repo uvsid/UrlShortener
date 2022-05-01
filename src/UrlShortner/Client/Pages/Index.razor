@@ -1,9 +1,31 @@
 ﻿@page "/"
+@inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Url Shortener</PageTitle>
 
-<h1>Hello, world!</h1>
+Shorten your link!
+<EditForm Model="urlToShorten">
+    <InputText @ref="inputTextReference" class="form-control" @bind-Value="urlToShorten" /> 
+</EditForm>
+ 
+<button class="btn btn-primary" @onclick="HandleClick">Shorten</button>
+<br/> 
+<a href="@response">@response</a>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+ 
+@code {
+    InputText inputTextReference;
+    string urlToShorten = "";
+    string response = "Post Response prints here:";
+    private async void HandleClick()
+    {
+        if (inputTextReference.Element.HasValue)
+        {
+            await inputTextReference.Element.Value.FocusAsync();
+            
+            var respon =  await Http.PostAsJsonAsync<string>("/shorten",urlToShorten);
+            response = await respon.Content.ReadAsStringAsync();
+            StateHasChanged();
+        }
+    }
+}

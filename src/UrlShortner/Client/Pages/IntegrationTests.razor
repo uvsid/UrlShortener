@@ -1,0 +1,83 @@
+﻿@page "/tests"
+@inject HttpClient Http
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+    <h3>IntegrationTests</h3>
+Test 1 <br/>
+
+<table>
+  <tr>
+    <th>Requested URI:  </th>
+    <th>Token Generated:</th>
+  </tr>
+  <tr>
+    <td>
+        <EditForm Model="@request">
+    <InputText  class="form-control" @bind-Value="@request" /> </EditForm></td>
+    <td>@token2</td>
+  </tr>
+</table>
+
+
+Request redirect URI for Token:
+
+<table>
+  <tr>
+    <th>Requested token:  </th>
+    <th>URI Generated:</th>
+    <th>Test Result</th>
+  </tr>
+  <tr>
+    <td>@token2</td>
+    <td>@response</td>
+    <td>@testResult</td>
+  </tr>
+</table>
+
+<button class="btn btn-primary" @onclick="HandleClick">Execute Test</button>
+
+<br/>
+<a href="http://localhost:8081"> Inspect MongoDB with MongoExpress </a> <br/>
+
+@code {
+    public string request = "www.google.com/";
+    public string token2 = "<Not Requested>";
+    public string response = "<Not Requested>";
+
+    public string testResult = "<Not Started>";
+
+
+    public async void HandleClick()
+    {
+        var fullResponse= await Http.PostAsJsonAsync<string>("/shorten",@request);
+        var token = await fullResponse.Content.ReadAsStringAsync();
+
+        if (token.Length!=11)
+        {
+            testResult = "FAIL";
+        }
+        else{
+            token2 = token;
+            StateHasChanged();
+            response = await Http.GetStringAsync($"/uri/{token}");
+
+            if (Test(request, response))
+                testResult = "PASS";
+            else
+                testResult = "FAIL";
+        }
+        StateHasChanged();
+
+    }
+
+    public bool Test ( string input, string output){
+
+        if (input == output)
+            return true;
+        if (output == $"http://{input}")
+            return true;
+
+        return false;
+    }
+}
